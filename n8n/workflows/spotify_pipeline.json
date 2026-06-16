@@ -1,0 +1,155 @@
+{
+  "name": "Spotify Voice of Customer Ingestion & Enrichment Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "timeHour": 1
+            }
+          ]
+        }
+      },
+      "id": "18f5d023-e18e-49b5-9f5a-e5554625b1b1",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        250,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "command": "\"/Users/likhityadav/Documents/NL- Spotify/.venv/bin/python\" \"/Users/likhityadav/Documents/NL- Spotify/cli.py\" setup-db"
+      },
+      "id": "2da1fb31-01be-4977-8fa0-d2cd9be346e2",
+      "name": "Setup Database Tables",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        450,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "command": "\"/Users/likhityadav/Documents/NL- Spotify/.venv/bin/python\" \"/Users/likhityadav/Documents/NL- Spotify/cli.py\" scrape --count 100 --country in"
+      },
+      "id": "cd0b64be-7fe2-4cb6-880c-c6f3769c0d12",
+      "name": "Scrape Play Store Reviews",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        650,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "command": "\"/Users/likhityadav/Documents/NL- Spotify/.venv/bin/python\" \"/Users/likhityadav/Documents/NL- Spotify/cli.py\" enrich --limit 100"
+      },
+      "id": "1bc7d9c0-6da7-4cb2-8356-829d8916d1ff",
+      "name": "AI Enrichment Pipeline",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        850,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "command": "\"/Users/likhityadav/Documents/NL- Spotify/.venv/bin/python\" \"/Users/likhityadav/Documents/NL- Spotify/cli.py\" embed --limit 100"
+      },
+      "id": "ba72ccfa-54f6-49a8-be07-5d0df8872bca",
+      "name": "Generate Vector Embeddings",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "command": "\"/Users/likhityadav/Documents/NL- Spotify/.venv/bin/python\" \"/Users/likhityadav/Documents/NL- Spotify/cli.py\" update-stats"
+      },
+      "id": "fe75db74-3ea1-4df2-a392-7cbbfdf6bbdd",
+      "name": "Update Statistics Tables",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        350
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Setup Database Tables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup Database Tables": {
+      "main": [
+        [
+          {
+            "node": "Scrape Play Store Reviews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Play Store Reviews": {
+      "main": [
+        [
+          {
+            "node": "AI Enrichment Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Enrichment Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Generate Vector Embeddings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Vector Embeddings": {
+      "main": [
+        [
+          {
+            "node": "Update Statistics Tables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateId": ""
+  }
+}
