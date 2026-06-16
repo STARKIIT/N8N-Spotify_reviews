@@ -6,32 +6,7 @@ A scheduled ETL and AI synthesis pipeline that scrapes Spotify Google Play Store
 
 ## 🚀 System Architecture
 
-```mermaid
-graph TD
-    A[Google Play Store API] -->|1. Scrape| B[Play Store Scraper]
-    B -->|2. Insert ON CONFLICT DO NOTHING| C[(PostgreSQL Database)]
-    C -->|3. Read Unenriched| D[AI Enrichment Pipeline]
-    D -->|4. Structure & Tag with Gemini 2.5 Flash| C
-    C -->|5. Read Enriched| E[Embedding Generator]
-    E -->|6. Calculate Vectors with Gemini Embeddings| C
-    C -->|7. Aggregate Stats| F[Daily Analytics Tables]
-    
-    %% n8n Orchestration
-    n8n[n8n Workflow] -->|Triggers Schedule| B
-    n8n -->|Triggers| D
-    n8n -->|Triggers| E
-    n8n -->|Triggers| F
-    n8n -->|8. SQL Join Query| PostgresNode[n8n PostgreSQL Node]
-    PostgresNode -->|9. Sync Rows| GoogleSheetsNode[n8n Google Sheets Node]
-    GoogleSheetsNode -->|10. Display| Sheet[(Google Sheet Dashboard)]
-
-    %% Agent Query Flow
-    UserQuery[CLI Research Query] -->|Ask Question| AgentEngine[Research Agent Engine]
-    AgentEngine -->|Query Cache Check| C
-    AgentEngine -->|SQL Analytics Query| F
-    AgentEngine -->|pgvector Semantic Match| C
-    AgentEngine -->|Synthesize Grounded Report| Report[Markdown Research Report]
-```
+![System Architecture](assets/system_architecture.png)
 
 ---
 
